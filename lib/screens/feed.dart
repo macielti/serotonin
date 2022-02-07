@@ -6,7 +6,6 @@ import 'package:video_player/video_player.dart';
 const _titleAppBar = 'Posts';
 
 class PostFeed extends StatelessWidget {
-
   final List<Post> posts = [Post(title: 'Test 1'), Post(title: 'Test 2')];
 
   @override
@@ -20,6 +19,9 @@ class PostFeed extends StatelessWidget {
     );
   }
 }
+
+const _approveButtonText = 'Aprovar';
+const _rejectButtonText = 'Rejeitar';
 
 class PostItem extends StatelessWidget {
   const PostItem(this.post);
@@ -48,11 +50,11 @@ class PostItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  child: Text('Aprovar'),
+                  child: Text(_approveButtonText),
                   onPressed: () {},
                 ),
                 ElevatedButton(
-                  child: Text('Declinar'),
+                  child: Text(_rejectButtonText),
                   onPressed: () {},
                 )
               ],
