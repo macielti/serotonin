@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:serotonina/client/dolinho_client.dart';
 import 'package:serotonina/component/player.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:video_player/video_player.dart';
 
 const _titleAppBar = 'Posts';
 
-class PostFeed extends StatelessWidget {
-  final List<Post> posts = [Post(title: 'Test 1'), Post(title: 'Test 2')];
-
+class PostFeedState extends State<PostFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titleAppBar)),
-      body: ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) => PostItem(posts[index]),
+      body: FutureBuilder<List<Post>?>(
+        future: DolinhoClient().fetchPosts(),
+        builder: (context, posts) {
+          if (posts.connectionState != ConnectionState.done) {
+            return Text('Carregando Posts');
+          } else {
+            return ListView.builder(
+              itemCount: posts.data!.length,
+              itemBuilder: (context, index) => PostItem(posts.data![index]),
+            );
+          }
+        },
       ),
     );
+  }
+}
+
+class PostFeed extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return PostFeedState();
   }
 }
 
