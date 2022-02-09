@@ -15,7 +15,19 @@ class PostFeedState extends State<PostFeed> {
         future: DolinhoClient().fetchPosts(),
         builder: (context, posts) {
           if (posts.connectionState != ConnectionState.done) {
-            return Text('Carregando Posts');
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Carregando Posts...'),
+                  SizedBox(height: 16),
+                  CircularProgressIndicator(
+                    semanticsValue: 'teste',
+                    semanticsLabel: 'Linear progress indicator',
+                  ),
+                ],
+              ),
+            );
           } else {
             return ListView.builder(
               itemCount: posts.data!.length,
@@ -53,14 +65,14 @@ class PostItem extends StatelessWidget {
             title: Text(post.title),
           ),
           Container(
-            height: 255,
+            height: 425,
             child: Player(
               videoPlayerController:
-                  VideoPlayerController.asset('videos/example.mp4'),
+                  VideoPlayerController.network(post.assetUrl),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
