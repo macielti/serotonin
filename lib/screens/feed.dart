@@ -67,11 +67,15 @@ class PostItem extends StatelessWidget {
               children: [
                 ElevatedButton(
                   child: Text(_approveButtonText),
-                  onPressed: () {},
+                  onPressed: () {
+                    DolinhoClient().curatePost(post, true);
+                  },
                 ),
                 ElevatedButton(
                   child: Text(_rejectButtonText),
-                  onPressed: () {},
+                  onPressed: () {
+                    DolinhoClient().curatePost(post, false);
+                  },
                 )
               ],
             ),
