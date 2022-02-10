@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serotonina/client/dolinho_client.dart';
+import 'package:serotonina/component/loading_indicator.dart';
 import 'package:serotonina/component/player.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:video_player/video_player.dart';
@@ -15,19 +16,7 @@ class PostFeedState extends State<PostFeed> {
         future: DolinhoClient().fetchPosts(),
         builder: (context, posts) {
           if (posts.connectionState != ConnectionState.done) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Carregando Posts...'),
-                  SizedBox(height: 16),
-                  CircularProgressIndicator(
-                    semanticsValue: 'teste',
-                    semanticsLabel: 'Linear progress indicator',
-                  ),
-                ],
-              ),
-            );
+            return LoadingIndicator();
           } else {
             return ListView.builder(
               itemCount: posts.data!.length,
