@@ -7,12 +7,12 @@ import 'package:video_player/video_player.dart';
 
 const _titleAppBar = 'Posts';
 
-class PostFeedState extends State<PostFeed> {
+class _PostFeedState extends State<PostFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titleAppBar)),
-      body: FutureBuilder<List<Post>?>(
+      body: FutureBuilder<List<Post>>(
         future: DolinhoClient().fetchPosts(),
         builder: (context, posts) {
           if (posts.connectionState != ConnectionState.done) {
@@ -20,7 +20,8 @@ class PostFeedState extends State<PostFeed> {
           } else {
             return ListView.builder(
               itemCount: posts.data!.length,
-              itemBuilder: (context, index) => PostItem(posts.data![index]),
+              itemBuilder: (context, index) =>
+                  PostItem(post: posts.data![index]),
             );
           }
         },
@@ -32,55 +33,51 @@ class PostFeedState extends State<PostFeed> {
 class PostFeed extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return PostFeedState();
+    return _PostFeedState();
   }
 }
 
-const _approveButtonText = 'Aprovar';
-const _rejectButtonText = 'Rejeitar';
-
 class PostItem extends StatelessWidget {
-  const PostItem(this.post);
+  const PostItem({required this.post});
 
   final Post post;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(post.title),
-          ),
-          Container(
-            height: 425,
-            child: Player(
-              videoPlayerController:
-                  VideoPlayerController.network(post.assetUrl),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  child: Text(_approveButtonText),
-                  onPressed: () {
-                    DolinhoClient().curatePost(post, true);
-                  },
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Dismissible(
+        key: Key(post.toString()),
+        onDismissed: (direction) {
+          if (direction == DismissDirection.startToEnd) {
+            DolinhoClient().curatePost(post, true);
+          } else if (direction == DismissDirection.endToStart) {
+            DolinhoClient().curatePost(post, false);
+          }
+        },
+        background: Container(color: Colors.green),
+        secondaryBackground: Container(color: Colors.red),
+        child: Card(
+          elevation: 8,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              ListTile(
+                title: Text(post.title),
+              ),
+              Container(
+                height: 425,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Player(
+                    videoPlayerController:
+                        VideoPlayerController.network(post.assetUrl),
+                  ),
                 ),
-                ElevatedButton(
-                  child: Text(_rejectButtonText),
-                  onPressed: () {
-                    DolinhoClient().curatePost(post, false);
-                  },
-                )
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

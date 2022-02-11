@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,6 +9,16 @@ class DolinhoClient {
   Future<List<Post>> fetchPosts() async {
     await Future.delayed(Duration(seconds: 5));
     final url = Uri.parse('$_baseUrl/post');
+    final response = await http.get(url);
+    final wirePosts = JsonDecoder().convert(response.body);
+    return wirePosts.map<Post>((json) => Post.fromJson(json)).toList();
+  }
+
+  Future<List<Post>> fetchNotCuratedPosts() async {
+    await Future.delayed(Duration(seconds: 5));
+    final url = Uri.parse(
+      '$_baseUrl/post/without-event-of-type?event-type=CURATED_YOUTUBE_VIDEO_UPLOAD',
+    );
     final response = await http.get(url);
     final wirePosts = JsonDecoder().convert(response.body);
     return wirePosts.map<Post>((json) => Post.fromJson(json)).toList();
