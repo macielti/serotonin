@@ -7,7 +7,7 @@ const String _baseUrl = 'http://192.168.3.160:8000';
 
 class DolinhoClient {
   Future<List<Post>> fetchPosts() async {
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 3));
     final url = Uri.parse('$_baseUrl/post');
     final response = await http.get(url);
     final wirePosts = JsonDecoder().convert(response.body);
@@ -15,7 +15,7 @@ class DolinhoClient {
   }
 
   Future<List<Post>> fetchNotCuratedPosts() async {
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 3));
     final url = Uri.parse(
       '$_baseUrl/post/without-event-of-type?event-type=CURATED_YOUTUBE_VIDEO_UPLOAD',
     );

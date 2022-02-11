@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:serotonina/bloc/post_feed_bloc.dart';
+import 'package:serotonina/bloc/post_feed.dart';
 import 'package:serotonina/screens/feed.dart';
 
 class SerotoninaApp extends StatelessWidget {
@@ -14,8 +14,11 @@ class SerotoninaApp extends StatelessWidget {
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => PostFeedBloc(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => PostFeedBloc()),
+        ChangeNotifierProvider(create: (context) => BottomBarBloc()),
+      ],
       child: SerotoninaApp(),
     ),
   );
