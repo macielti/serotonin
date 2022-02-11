@@ -16,7 +16,6 @@ class _PostFeedState extends State<PostFeed> {
       appBar: AppBar(title: Text(_titleAppBar)),
       body: Consumer<PostFeedBloc>(
         builder: (context, postFeedBloc, child) {
-          postFeedBloc.fetchPosts();
           if (postFeedBloc.loading) {
             return LoadingIndicator();
           } else {
@@ -54,42 +53,45 @@ class PostFeed extends StatefulWidget {
 class _PostItemState extends State<PostItem> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Dismissible(
-        key: Key(widget.post.toString()),
-        onDismissed: (direction) async {
-          if (direction == DismissDirection.startToEnd) {
-            await DolinhoClient().curatePost(widget.post, true);
-            setState(() {});
-          } else if (direction == DismissDirection.endToStart) {
-            await DolinhoClient().curatePost(widget.post, false);
-            setState(() {});
-          }
-        },
-        background: Container(color: Colors.green),
-        secondaryBackground: Container(color: Colors.red),
-        child: Card(
-          elevation: 8,
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              ListTile(
-                title: Text(widget.post.title),
-              ),
-              Container(
-                height: 425,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Player(
-                    videoPlayerController:
-                        VideoPlayerController.network(widget.post.assetUrl),
-                  ),
-                ),
-              ),
-            ],
+    return Card(
+      elevation: 8,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(widget.post.title),
           ),
-        ),
+          Container(
+            height: 425,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Player(
+                videoPlayerController:
+                    VideoPlayerController.network(widget.post.assetUrl),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  child: Text('Aprovar'),
+                  onPressed: () async {
+                    await DolinhoClient().curatePost(widget.post, true);
+                  },
+                ),
+                ElevatedButton(
+                  child: Text('Rejeitar'),
+                  onPressed: () async {
+                    await DolinhoClient().curatePost(widget.post, true);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
