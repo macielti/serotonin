@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serotonina/client/dolinho_client.dart';
 import 'package:serotonina/component/loading_indicator.dart';
 import 'package:serotonina/component/player.dart';
+import 'package:serotonina/models/curatorship_stats.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:video_player/video_player.dart';
 
@@ -26,6 +27,18 @@ class _PostFeedState extends State<PostFeed> {
           }
         },
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          child: FutureBuilder<CuratorshipStats>(
+            future: DolinhoClient().fetchCuratorshipStats(),
+            builder: (context, curatorshipStats) {
+              return Text(
+                  '${curatorshipStats.data!.approvedTotalDurationSeconds.toString()}');
+            },
+          ),
+          height: 50.0,
+        ),
+      ),
     );
   }
 }
@@ -37,22 +50,20 @@ class PostFeed extends StatefulWidget {
   }
 }
 
-class PostItem extends StatelessWidget {
-  const PostItem({required this.post});
-
-  final Post post;
-
+class _PostItemState extends State<PostItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Dismissible(
-        key: Key(post.toString()),
-        onDismissed: (direction) {
+        key: Key(widget.post.toString()),
+        onDismissed: (direction) async {
           if (direction == DismissDirection.startToEnd) {
-            DolinhoClient().curatePost(post, true);
+            await DolinhoClient().curatePost(widget.post, true);
+            setState(() {});
           } else if (direction == DismissDirection.endToStart) {
-            DolinhoClient().curatePost(post, false);
+            await DolinhoClient().curatePost(widget.post, false);
+            setState(() {});
           }
         },
         background: Container(color: Colors.green),
@@ -63,7 +74,7 @@ class PostItem extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text(post.title),
+                title: Text(widget.post.title),
               ),
               Container(
                 height: 425,
@@ -71,7 +82,7 @@ class PostItem extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Player(
                     videoPlayerController:
-                        VideoPlayerController.network(post.assetUrl),
+                        VideoPlayerController.network(widget.post.assetUrl),
                   ),
                 ),
               ),
@@ -80,5 +91,16 @@ class PostItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class PostItem extends StatefulWidget {
+  const PostItem({required this.post});
+
+  final Post post;
+
+  @override
+  State<StatefulWidget> createState() {
+    return _PostItemState();
   }
 }

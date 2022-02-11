@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:serotonina/models/curatorship_stats.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:http/http.dart' as http;
 
@@ -38,5 +39,11 @@ class DolinhoClient {
         },
       ),
     );
+  }
+
+  Future<CuratorshipStats> fetchCuratorshipStats() async {
+    final url = Uri.parse('$_baseUrl/post/curatorship-stats');
+    final response = await http.get(url);
+    return CuratorshipStats.fromJson(JsonDecoder().convert(response.body));
   }
 }
