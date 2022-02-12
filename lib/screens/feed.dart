@@ -79,10 +79,14 @@ class _PostItemState extends State<PostItem> {
           await DolinhoClient().curatePost(widget.post, true);
           Provider.of<BottomBarBloc>(context, listen: false)
               .fetchCuratorshipStats();
+          Provider.of<PostFeedBloc>(context, listen: false)
+              .removePost(widget.post);
         } else {
           await DolinhoClient().curatePost(widget.post, false);
           Provider.of<BottomBarBloc>(context, listen: false)
               .fetchCuratorshipStats();
+          Provider.of<PostFeedBloc>(context, listen: false)
+              .removePost(widget.post);
         }
       },
       background: Container(
