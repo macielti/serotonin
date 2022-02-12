@@ -8,6 +8,8 @@ import 'package:serotonina/models/post.dart';
 import 'package:video_player/video_player.dart';
 
 const _titleAppBar = 'Posts';
+const _loadingText = 'Carregando...';
+const _bottomBarTitle = 'Tempo de conteúdo aprovado não utilizado';
 
 class _PostFeedState extends State<PostFeed> {
   @override
@@ -34,7 +36,7 @@ class _PostFeedState extends State<PostFeed> {
             builder: (context, bottomBarBloc, child) {
               if (bottomBarBloc.loading) {
                 return Center(
-                  child: Text('Carregando...'),
+                  child: Text(_loadingText),
                 );
               } else {
                 return Padding(
@@ -42,7 +44,7 @@ class _PostFeedState extends State<PostFeed> {
                   child: Center(
                     child: Column(
                       children: [
-                        Text('Tempo de conteúdo aprovado não utilizado'),
+                        Text(_bottomBarTitle),
                         Text(
                           Duration(
                                   seconds: bottomBarBloc.curatorshipStats
@@ -79,10 +81,14 @@ class _PostItemState extends State<PostItem> {
           await DolinhoClient().curatePost(widget.post, true);
           Provider.of<BottomBarBloc>(context, listen: false)
               .fetchCuratorshipStats();
+          Provider.of<PostFeedBloc>(context, listen: false)
+              .removePost(widget.post);
         } else {
           await DolinhoClient().curatePost(widget.post, false);
           Provider.of<BottomBarBloc>(context, listen: false)
               .fetchCuratorshipStats();
+          Provider.of<PostFeedBloc>(context, listen: false)
+              .removePost(widget.post);
         }
       },
       background: Container(
