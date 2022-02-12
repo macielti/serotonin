@@ -32,6 +32,8 @@ class BottomBarBloc extends ChangeNotifier {
   late CuratorshipStats curatorshipStats;
 
   void fetchCuratorshipStats() async {
+    loading = true;
+    notifyListeners();
     curatorshipStats = await DolinhoClient().fetchCuratorshipStats();
     loading = false;
     notifyListeners();

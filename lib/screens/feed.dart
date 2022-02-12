@@ -72,43 +72,47 @@ class PostFeed extends StatefulWidget {
 class _PostItemState extends State<PostItem> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<BottomBarBloc>(
-      builder: (context, bottomBarBloc, child) {
-        return Card(
-          key: ObjectKey(widget.post),
-          elevation: 8,
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              ListTile(
-                title: Text(widget.post.title),
-              ),
-              Container(
-                height: 425,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Player(
-                    videoPlayerController:
-                        VideoPlayerController.network(widget.post.assetUrl),
-                  ),
+    return Dismissible(
+      key: UniqueKey(),
+      onDismissed: (direction) async {
+        if (direction == DismissDirection.startToEnd) {
+          await DolinhoClient().curatePost(widget.post, true);
+          Provider.of<BottomBarBloc>(context, listen: false)
+              .fetchCuratorshipStats();
+        } else {
+          await DolinhoClient().curatePost(widget.post, false);
+          Provider.of<BottomBarBloc>(context, listen: false)
+              .fetchCuratorshipStats();
+        }
+      },
+      background: Container(
+        color: Colors.lightGreen,
+      ),
+      secondaryBackground: Container(
+        color: Colors.redAccent,
+      ),
+      child: Card(
+        key: UniqueKey(),
+        elevation: 8,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(widget.post.title),
+            ),
+            Container(
+              height: 425,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Player(
+                  videoPlayerController:
+                      VideoPlayerController.network(widget.post.assetUrl),
                 ),
               ),
-              Consumer<PostFeedBloc>(
-                builder: (context, postFeedBlock, child) {
-                  return ElevatedButton(
-                    onPressed: () async {
-                      await DolinhoClient().curatePost(widget.post, true);
-                      postFeedBlock.removePost(widget.post);
-                      bottomBarBloc.fetchCuratorshipStats();
-                    },
-                    child: Text('Aprovar'),
-                  );
-                },
-              )
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
