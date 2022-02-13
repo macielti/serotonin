@@ -12,7 +12,7 @@ class PostFeedBloc extends ChangeNotifier {
   late List<Post> posts = [];
 
   void fetchPosts() async {
-    posts = await DolinhoClient().fetchNotCuratedPosts();
+    posts = await DolinhoClient().fetchPostsReadyForCuratorship();
     loading = false;
     notifyListeners();
   }
