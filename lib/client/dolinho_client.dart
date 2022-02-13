@@ -3,7 +3,7 @@ import 'package:serotonina/models/curatorship_stats.dart';
 import 'package:serotonina/models/post.dart';
 import 'package:http/http.dart' as http;
 
-const String _baseUrl = 'http://192.168.3.160:8000';
+const String _baseUrl = 'http://192.168.3.161:8000';
 
 class DolinhoClient {
   Future<List<Post>> fetchPosts() async {
