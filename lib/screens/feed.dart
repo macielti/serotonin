@@ -60,6 +60,16 @@ class _PostFeedState extends State<PostFeed> {
           ),
         ),
       ),
+      floatingActionButton: Consumer<PostFeedBloc>(
+        builder: (context, postFeedBloc, child) {
+          return FloatingActionButton(
+            child: Icon(Icons.refresh),
+            onPressed: () {
+              postFeedBloc.fetchPosts();
+            },
+          );
+        },
+      ),
     );
   }
 }

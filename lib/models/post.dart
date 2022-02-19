@@ -13,6 +13,6 @@ class Post {
     return Post(
         id: json['id'],
         title: json['title'],
-        assetUrl: "http://192.168.3.160:8020/assets/${json['id']}.mp4");
+        assetUrl: "http://192.168.3.161:8020/assets/${json['id']}.mp4");
   }
 }
