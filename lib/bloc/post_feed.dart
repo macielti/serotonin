@@ -14,7 +14,7 @@ class PostFeedBloc extends ChangeNotifier {
   void fetchPosts() async {
     loading = true;
     notifyListeners();
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 1));
     posts = await DolinhoClient().fetchPostsReadyForCuratorship();
     loading = false;
     notifyListeners();
