@@ -32,7 +32,7 @@ class UserDataSourceImpl implements UserDataSource {
           'password': password
         }));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return UserModel.fromJson(json.decode(response.body));
     } else if (response.statusCode == 409) {
       throw UserAlreadyExistsException();

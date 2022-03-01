@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
+import 'package:serotonina/core/error/exceptions.dart';
 import 'package:serotonina/features/user_registration/data/datasources/user_datasource.dart';
 import 'package:serotonina/features/user_registration/data/models/user_model.dart';
 
@@ -41,7 +42,7 @@ void main() {
         userDataSourceImpl!.submitNewUser(
             username: tUsername, email: tEmail, password: tPassword);
 
-        verify(mockClient!.post('http://localhost:8010/users' as Uri,
+        verify(mockClient!.post(Uri.parse('http://localhost:8010/users'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(<String, String>{
               'username': tUsername,
@@ -61,6 +62,25 @@ void main() {
 
         expect(result, tUserModel);
       });
+
+      test(
+        'should throw UserAlreadyExistsException exception when the service says that ',
+        () async {
+          when(mockClient!.post(any,
+                  headers: anyNamed('headers'), body: anyNamed('body')))
+              .thenAnswer((realInvocation) async => http.Response(
+                  fixture(
+                      'user_registration_porteiro_user_already_exists.json'),
+                  409));
+
+          final call = userDataSourceImpl!.submitNewUser;
+
+          expect(
+              () =>
+                  call(username: tUsername, email: tEmail, password: tPassword),
+              throwsA(TypeMatcher<UserAlreadyExistsException>()));
+        },
+      );
     },
   );
 }

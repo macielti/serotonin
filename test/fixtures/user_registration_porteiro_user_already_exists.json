@@ -1,0 +1,5 @@
+{
+  "detail": "username already in use by other user",
+  "error": "not-unique-user",
+  "message": "Username already in use"
+}
