@@ -1,0 +1,10 @@
+{
+  "user": {
+    "id": "random-uuid",
+    "username": "admin",
+    "email": "admin@example.com",
+    "roles": [
+      "ADMIN"
+    ]
+  }
+}
