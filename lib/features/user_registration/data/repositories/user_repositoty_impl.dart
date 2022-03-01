@@ -21,6 +21,8 @@ class UserRepositoryImpl implements UserRepository {
           username: username, email: email, password: password));
     } on ServerException {
       return Left(ServerFailure());
+    } on UserAlreadyExistsException {
+      return Left(UserAlreadyExistsFailure());
     }
   }
 }

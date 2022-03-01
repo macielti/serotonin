@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -64,7 +63,7 @@ void main() {
       });
 
       test(
-        'should throw UserAlreadyExistsException exception when the service says that ',
+        'should throw UserAlreadyExistsException exception when the service says that there is a existent user with the same unique properties',
         () async {
           when(mockClient!.post(any,
                   headers: anyNamed('headers'), body: anyNamed('body')))
@@ -79,6 +78,23 @@ void main() {
               () =>
                   call(username: tUsername, email: tEmail, password: tPassword),
               throwsA(TypeMatcher<UserAlreadyExistsException>()));
+        },
+      );
+
+      test(
+        'should throw a ServerException when there is a unexpected error from server side',
+        () async {
+          when(mockClient!.post(any,
+                  headers: anyNamed('headers'), body: anyNamed('body')))
+              .thenAnswer((realInvocation) async =>
+                  http.Response(fixture('server_error_response.json'), 500));
+
+          final call = userDataSourceImpl!.submitNewUser;
+
+          expect(
+              () =>
+                  call(username: tUsername, email: tEmail, password: tPassword),
+              throwsA(TypeMatcher<ServerException>()));
         },
       );
     },

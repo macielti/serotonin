@@ -57,7 +57,7 @@ void main() {
     });
 
     test(
-      'should return server error when we try to registry a already existent user (username, email)',
+      'should return server error when there was a unexpected error from serve side',
       () async {
         when(mockUserRemoteDataSource!.submitNewUser(
           username: tUsername,
@@ -68,15 +68,29 @@ void main() {
         final result = await repository!.submitNewUser(
             username: tUsername, email: tEmail, password: tPassword);
 
-        verify(
-          mockUserRemoteDataSource!.submitNewUser(
-            username: tUsername,
-            email: tEmail,
-            password: tPassword,
-          ),
-        );
+        verify(mockUserRemoteDataSource!.submitNewUser(
+            username: tUsername, email: tEmail, password: tPassword));
 
         expect(result, Left(ServerFailure()));
+      },
+    );
+
+    test(
+      'should return user already exist error when we try to registry an already existent user',
+      () async {
+        when(mockUserRemoteDataSource!.submitNewUser(
+          username: tUsername,
+          email: tEmail,
+          password: tPassword,
+        )).thenThrow(UserAlreadyExistsException());
+
+        final result = await repository!.submitNewUser(
+            username: tUsername, email: tEmail, password: tPassword);
+
+        verify(mockUserRemoteDataSource!.submitNewUser(
+            username: tUsername, email: tEmail, password: tPassword));
+
+        expect(result, Left(UserAlreadyExistsFailure()));
       },
     );
   });
