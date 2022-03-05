@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:serotonina/bloc/register_new_user.dart';
 import 'package:serotonina/component/button_loading_indicator.dart';
-import 'package:serotonina/models/user_registration.dart';
+import 'package:serotonina/features/user_registration/presentation/bloc/user_registration_bloc.dart';
 
-class RegisterNewUser extends StatelessWidget {
+class UserRegistration extends StatelessWidget {
+  UserRegistration({required this.onSuccess, required this.onError});
+
   final formKey = GlobalKey<FormState>();
   late String username, email, password;
+
+  final VoidCallback onSuccess;
+  final VoidCallback onError;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Criar Conta')),
+      appBar: AppBar(title: Text('Create Account')),
       body: Container(
         padding: EdgeInsets.only(left: 16.0, right: 16.0),
         child: Form(
@@ -25,13 +29,7 @@ class RegisterNewUser extends StatelessWidget {
                     labelText: 'Login',
                     hintText: 'Nome de usuário',
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Este campo não pode ficar vazio';
-                    } else {
-                      return null;
-                    }
-                  },
+                  validator: _validateUsername,
                   onSaved: (value) {
                     username = value!;
                   },
@@ -44,13 +42,7 @@ class RegisterNewUser extends StatelessWidget {
                     labelText: 'Email',
                     hintText: 'exemplo@exemplo.com',
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Este campo não pode ficar vazio';
-                    } else {
-                      return null;
-                    }
-                  },
+                  validator: _validateEmail,
                   onSaved: (value) {
                     email = value!;
                   },
@@ -64,35 +56,24 @@ class RegisterNewUser extends StatelessWidget {
                     labelText: 'Senha',
                     hintText: '*******',
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Este campo não pode ficar vazio';
-                    } else {
-                      return null;
-                    }
-                  },
+                  validator: _validatePassword,
                   onSaved: (value) {
                     password = value!;
                   },
                 ),
               ),
-              Consumer<RegisterNewUserBloc>(
-                builder: (context, registerNewUserBloc, child) {
+              Consumer<UserRegistrationBloc>(
+                builder: (context, userRegistrationBloc, child) {
+                  _handleBlocState(userRegistrationBloc);
                   return ButtonLoadingIndicator(
-                    loading: registerNewUserBloc.loading,
+                    loading: userRegistrationBloc.state is Loading,
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         formKey.currentState!.save();
-                        await registerNewUserBloc.submitNewUser(
-                          UserRegistration(
-                              username: username,
-                              email: email,
-                              password: password),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Novo usuário criado ✅'),
-                          ),
+                        userRegistrationBloc.submitNewUser(
+                          username: username,
+                          email: email,
+                          password: password,
                         );
                       }
                     },
@@ -105,5 +86,43 @@ class RegisterNewUser extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleBlocState(UserRegistrationBloc userRegistrationBloc) {
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) {
+        switch (userRegistrationBloc.state.runtimeType) {
+          case Error:
+            onError();
+            break;
+          case Loaded:
+            onSuccess();
+        }
+      },
+    );
+  }
+
+  String? _validateUsername(String? value) {
+    if (value!.isEmpty) {
+      return 'Este campo não pode ficar vazio';
+    } else {
+      return null;
+    }
+  }
+
+  String? _validateEmail(String? value) {
+    if (value!.isEmpty) {
+      return 'Este campo não pode ficar vazio';
+    } else {
+      return null;
+    }
+  }
+
+  String? _validatePassword(String? value) {
+    if (value!.isEmpty) {
+      return 'Este campo não pode ficar vazio';
+    } else {
+      return null;
+    }
   }
 }

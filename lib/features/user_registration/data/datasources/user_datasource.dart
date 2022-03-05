@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:serotonina/core/error/exceptions.dart';
@@ -23,20 +24,24 @@ class UserDataSourceImpl implements UserDataSource {
     required String email,
     required String password,
   }) async {
-    final response = await httpClient.post(
-        Uri.parse('http://localhost:8010/users'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{
-          'username': username,
-          'email': email,
-          'password': password
-        }));
+    try {
+      final response = await httpClient.post(
+          Uri.parse('http://localhost:8010/users'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(<String, String>{
+            'username': username,
+            'email': email,
+            'password': password
+          }));
 
-    if (response.statusCode == 201) {
-      return UserModel.fromJson(json.decode(response.body));
-    } else if (response.statusCode == 409) {
-      throw UserAlreadyExistsException();
-    } else {
+      if (response.statusCode == 201) {
+        return UserModel.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 409) {
+        throw UserAlreadyExistsException();
+      } else {
+        throw ServerException();
+      }
+    } on SocketException catch (_) {
       throw ServerException();
     }
   }
