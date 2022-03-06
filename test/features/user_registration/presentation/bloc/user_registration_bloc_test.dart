@@ -20,9 +20,9 @@ void main() {
 
   group('initial state', () {
     test(
-      'when the bloc is instantiated it should be in a not loaded state',
+      'when the bloc is instantiated it should be in a empty state',
       () async {
-        expect(bloc!.isLoading, false);
+        expect(bloc!.state, Empty());
       },
     );
   });
